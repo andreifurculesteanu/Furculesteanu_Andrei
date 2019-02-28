@@ -69,8 +69,8 @@ public class ServletLogin extends HttpServlet {
 		usuario = request.getParameter("usuario");
 		clave = request.getParameter("clave");
 		
-		if(usuario != null) { //usario tiene cosas integradas
-			if(clave != null) { //la clave tambien tiene cosas dentro
+		if(usuario != null && !usuario.isEmpty()) { //usario tiene cosas integradas
+			if(clave != null && !clave.isEmpty()) { //la clave tambien tiene cosas dentro
 				// vemos si el usuario existe
 				for (Entry<String, String> key : mapaUsuarios.entrySet()) {
 					if (key.getKey().equals(usuario) && key.getValue().equals(clave)) {
@@ -109,7 +109,7 @@ public class ServletLogin extends HttpServlet {
 					dispatcher.forward(request, response);
 				}
 			} else {
-				mensaje = "La contrasenia no puede estar vacia"; 
+				mensaje = "La contraseña no puede estar vacia"; 
 				request.setAttribute("mensaje", mensaje);
 				RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/plantilla_login.jsp");
 				dispatcher.forward(request, response);
