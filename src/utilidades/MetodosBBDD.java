@@ -16,6 +16,11 @@ public class MetodosBBDD {
 	public static final String USER = "root";
 	public static final String PASS = "root";
 	
+	/**
+	 * Metodo que crea conexion a la base de datos
+	 * Devuelve dicha una conexion
+	 * @return
+	 */
 	public static Connection createConnection() {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
@@ -31,22 +36,30 @@ public class MetodosBBDD {
 		return connection;
 	} // fin del metodo que crea la conexion a BBDD
 	
-	
-	public static void insertaPalabra(Connection con, String palabra, String word) {
+	/**
+	 * Metodo que busca en las diferentes tablas si existe la palabra en ingles o español
+	 * Si existen devuelve mensaje: "Traduccion ya existente"
+	 * Si no existen devuelve mensaje: "Traduccion creada con exito"
+	 * @param con
+	 * @param palabra
+	 * @param word
+	 * @return
+	 */
+	public static String insertaPalabra(Connection con, String palabra, String word) {
 		int existeEs = 0, existeEn = 0, existeEsEn = 0;
-		
-		PreparedStatement psEs = null, psEsInsert = null, psEn = null, psEnInsert = null;
+		String mensaje = "";
+		PreparedStatement psEs = null, psEsInsert = null, psEn = null, psEnInsert = null, psEsEn = null, psEsEnInsert = null;
 		ArrayList<String> todasPalabras = new ArrayList<String>();
 		ArrayList<String> allWords = new ArrayList<String>();
 		LinkedHashMap<String, String> palabrasWords = new LinkedHashMap<String, String>();
 		
 		try {
 			//verificamos que existe la palabra en ESPAÑOL en la tabla es
-			psEs = con.prepareStatement("SELECT * FROM es WHERE palabra_es = " + palabra);
+			psEs = con.prepareStatement("SELECT * FROM es WHERE palabra_es like " + palabra);
 			ResultSet rsEs = psEs.executeQuery();
 			
 			while (rsEs.next()) {
-				if (!rsEs.getString("palabra").equals(palabra)) {//es decir que no existe
+				if (!rsEs.getString("palabra_es").equals(palabra)) {//es decir que no existe
 					psEsInsert = con.prepareStatement("insert into es values (?)");
 					psEsInsert.setString(1, palabra);
 					psEsInsert.executeUpdate();
@@ -60,23 +73,41 @@ public class MetodosBBDD {
 			ResultSet rsEn = psEn.executeQuery();
 			
 			while (rsEn.next()) {
-				if (!rsEn.getString("palabra").equals(word)) {//es decir que no existe
+				if (!rsEn.getString("word_en").equals(word)) {//es decir que no existe
 					psEnInsert = con.prepareStatement("insert into es values (?)");
 					psEnInsert.setString(1, word);
 					psEnInsert.executeUpdate();
 				} else {
-					existeEs++;
+					existeEn++;
 				}
 			}
 			
+			//verificamos que existe la palabra en ESPAÑOL e INGLES en la tabla es_en
+			psEsEn = con.prepareStatement("SELECT * FROM es_en WHERE palabra_es = " + palabra + " AND word_en = " + word);
+			ResultSet rsEsEn = psEn.executeQuery();
+			
+			while (rsEsEn.next()) {
+				if (!rsEsEn.getString("palabra_es").equals(palabra) && !rsEsEn.getString("word_en").equals(word)) {//es decir que no existe
+					psEsEnInsert = con.prepareStatement("insert into es values (?)");
+					psEsEnInsert.setString(1, palabra);
+					psEsEnInsert.setString(2, word);
+					psEsEnInsert.executeUpdate();
+				} else {
+					existeEsEn++;
+				}
+			}
+			
+			if(existeEs != 0 || existeEn != 0 || existeEsEn != 0) {
+				//es que alguna insercion ha hecho
+				mensaje = "Traduccion creada con exito";
+			} else {
+				mensaje = "Traduccion ya existente";
+			}	
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
-		
-		
+		return mensaje;
 	}//fin metodo insertaPalabra
 	
 }

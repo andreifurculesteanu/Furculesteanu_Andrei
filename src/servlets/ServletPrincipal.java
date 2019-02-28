@@ -26,7 +26,7 @@ public class ServletPrincipal extends HttpServlet {
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String usuario;
-		int visitasSesion, busquedasTotales;
+		int visitasSesion, busquedasTotales, busquedasTotalesAhora = 0;
 		
 		//recupero sesion:
 		HttpSession laSesion = request.getSession(false);
@@ -41,7 +41,7 @@ public class ServletPrincipal extends HttpServlet {
 		request.setAttribute("usuario", usuario);
 		request.setAttribute("visitasSesion", visitasSesion);
 		request.setAttribute("busquedasTotales", busquedasTotales);
-		
+		request.setAttribute("busquedasTotalesAhora", busquedasTotalesAhora);
 		
 		RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/plantilla_principal.jsp");
 		dispatcher.forward(request, response);
@@ -50,15 +50,16 @@ public class ServletPrincipal extends HttpServlet {
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		if (request.getParameter("boton") != null) { //vengo de buscar del jsp: plantilla_principal
-			int busquedasTotales;
+			int busquedasTotales, busquedasTotalesAhora;
 			
 			//recupero sesion:
 			HttpSession laSesion = request.getSession(false);
 			busquedasTotales = (int) laSesion.getAttribute("busquedasTotales");
-			busquedasTotales++; //aumento las veces que el usuario haga click en el boton de buscar
-			
+			busquedasTotalesAhora = (int) laSesion.getAttribute("busquedasTotalesAhora");
+			busquedasTotalesAhora++;
 			//vuelvo a meter en la sesion 
 			laSesion.setAttribute("busquedasTotales", busquedasTotales);
+			laSesion.setAttribute("busquedasTotalesAhora", busquedasTotalesAhora);
 		}
 		
 		String usuario;

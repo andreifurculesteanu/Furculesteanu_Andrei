@@ -5,7 +5,7 @@
 	String usuario = (String) request.getAttribute("usuario");
 	Integer visitasSesion = (Integer) request.getAttribute("visitasSesion");
 	Integer busquedasTotales = (Integer) request.getAttribute("busquedasTotales");
-	
+	String mensaje = (String) request.getAttribute("mensaje");
 %>
 <!doctype html>
 <html>
@@ -18,6 +18,11 @@ Páginas visitadas en esta conexión: <b><%=visitasSesion %></b> <br/>
 Consultas realizadas en la ultima conexion: <b><%=busquedasTotales %></b> <br/>
 <a href="ServletLogin?desc">Desconectar</a> <br />
 <form method="post" action="ServletAlta">
+<% if (mensaje != null) { %>
+		<div class="mensaje">
+			<%= mensaje %>
+		</div>
+<% } %>
 <div>
 <label for="palabra_es" id="lbl_palabra_es">Palabra</label> 
 <input type="text" name="palabra_es"> 

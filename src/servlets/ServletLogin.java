@@ -37,10 +37,10 @@ public class ServletLogin extends HttpServlet {
 			String usuario = (String) laSesion.getAttribute("usuario");
 			String mensaje = "Adios, " + usuario;
 			
-			int busquedasTotales = (int) laSesion.getAttribute("busquedasTotales");
+			int busquedasTotalesAhora = (int) laSesion.getAttribute("busquedasTotalesAhora");
 			
 			// Creamos cookie
-			Cookie galleta = new Cookie(usuario, Integer.toString(busquedasTotales));
+			Cookie galleta = new Cookie(usuario, Integer.toString(busquedasTotalesAhora));
 			galleta.setMaxAge(60*60*24*365*10); // dura 10 años
 			response.addCookie(galleta);
 			
@@ -57,7 +57,7 @@ public class ServletLogin extends HttpServlet {
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String usuario, clave, mensaje = "", valorCookie;
-		int cont = 0, busquedasTotales = 0, visitasSesion = 0;
+		int cont = 0, busquedasTotales = 0, visitasSesion = 0, busquedasTotalesAhora = 0;
 		
 		Map<String, String> mapaUsuarios = new HashMap<String, String>();
 		mapaUsuarios.put("alumno", "alumno");
@@ -96,6 +96,7 @@ public class ServletLogin extends HttpServlet {
 					laSesion.setAttribute("usuario", usuario);
 					laSesion.setAttribute("visitasSesion", visitasSesion);
 					laSesion.setAttribute("busquedasTotales", busquedasTotales);
+					laSesion.setAttribute("busquedasTotalesAhora", busquedasTotalesAhora);
 						
 					//redirijo al ServletPrincipal
 					//alli es donde recojo otra vez la sesion y se la paso al jsp

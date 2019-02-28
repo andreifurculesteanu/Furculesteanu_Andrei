@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import utilidades.MetodosBBDD;
+
 /**
  * Servlet implementation class ServletAlta
  */
@@ -46,8 +48,35 @@ public class ServletAlta extends HttpServlet {
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		doGet(request, response);
+		String usuario;
+		int visitasSesion, busquedasTotales;
+		
+		//creamos sesion:
+		HttpSession laSesion = request.getSession(false);
+		
+		//recojo parametros de la sesion
+		usuario = (String) laSesion.getAttribute("usuario");
+		visitasSesion = (int) laSesion.getAttribute("visitasSesion");
+		busquedasTotales = (int) laSesion.getAttribute("busquedasTotales");
+		visitasSesion++;
+		laSesion.setAttribute("visitasSesion", visitasSesion);
+		//paso parametros al jsp
+		request.setAttribute("usuario", usuario);
+		request.setAttribute("visitasSesion", visitasSesion);
+		request.setAttribute("busquedasTotales", busquedasTotales);
+		
+		RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/plantilla_alta_palabras.jsp");
+		dispatcher.forward(request, response);
+
+		
+		if (request.getParameter("insertar") != null) {
+			String palabra = request.getParameter("palabra_es");
+			String word = request.getParameter("word_en");
+			
+			String mensaje = MetodosBBDD.insertaPalabra(MetodosBBDD.createConnection(), palabra, word);
+			request.setAttribute("mensaje", mensaje);
+		}
+		
 	}
 
 }
